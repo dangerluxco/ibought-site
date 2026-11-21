@@ -21,14 +21,19 @@ export function productUrlFor(asin) {
  * r/index.html) reads the part after # in the friend's browser and shows the
  * "View on Amazon" button; any affiliate tag lives there, never in the app.
  * An optional third part is the Amazon image id, so the page can show the
- * picture: .../r/#<ASIN>/<name>/<imageId>.
+ * picture, and an optional fourth is the sharer's key (signed-in users only),
+ * so the page can count that a friend opened it:
+ * .../r/#<ASIN>/<name>/<imageId>/<shareKey>. "-" fills an empty earlier part.
  */
-export function shareUrlFor(asin, title, image) {
+export function shareUrlFor(asin, title, image, shareKey) {
     const slug = shortTitle(title)
         .replace(/[^A-Za-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
         .slice(0, 60);
     const imageId = amazonImageId(image);
+    const key = shareKey && /^[a-z0-9]{10}$/.test(shareKey) ? shareKey : null;
+    if (key)
+        return `https://ibought.online/r/#${asin}/${slug || '-'}/${imageId || '-'}/${key}`;
     if (imageId)
         return `https://ibought.online/r/#${asin}/${slug || '-'}/${imageId}`;
     return `https://ibought.online/r/#${asin}${slug ? `/${slug}` : ''}`;

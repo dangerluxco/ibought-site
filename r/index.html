@@ -78,6 +78,29 @@
   var url = 'https://www.amazon.com/dp/' + asin + (TAG ? '?tag=' + encodeURIComponent(TAG) : '');
   document.getElementById('name').textContent = name || 'Something they bought and liked';
   document.getElementById('go').href = url;
+  // Optional fourth part: the sharer's key. Tell the sharer that a friend
+  // opened this, once per browser per item. Sent: the key, the product id and
+  // the time. Nothing about the visitor. See firestore.rules (opens).
+  var shareKey = parts[3] || '';
+  if (/^[a-z0-9]{10}$/.test(shareKey)) {
+    var seenKey = 'ib-open-' + shareKey + '-' + asin;
+    var seen = false;
+    try { seen = !!localStorage.getItem(seenKey); } catch (e) {}
+    if (!seen) {
+      try { localStorage.setItem(seenKey, '1'); } catch (e) {}
+      fetch('https://firestore.googleapis.com/v1/projects/ibought-14838/databases/(default)/documents/opens?key=AIzaSyBrhS6xJ-B5u4W5fXgvn3fGMLjeRI4Huro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: {
+            k: { stringValue: shareKey },
+            asin: { stringValue: asin },
+            at: { timestampValue: new Date().toISOString() }
+          }
+        })
+      }).catch(function () {});
+    }
+  }
   if (TAG) document.getElementById('disclosure').hidden = false;
   if (SHOW_IMAGE && /^[A-Za-z0-9+_-]{6,24}$/.test(imageId)) {
     var shot = document.getElementById('shot');
