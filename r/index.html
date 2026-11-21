@@ -101,6 +101,33 @@
       }).catch(function () {});
     }
   }
+  // Same idea for the button: tell the sharer a friend went on to Amazon,
+  // once per browser per item. keepalive lets the request finish while the
+  // browser is already leaving for Amazon; the tap is never delayed. This is
+  // a tap on our page only. We do not know whether anything was bought.
+  if (/^[a-z0-9]{10}$/.test(shareKey)) {
+    document.getElementById('go').addEventListener('click', function () {
+      var tapKey = 'ib-tap-' + shareKey + '-' + asin;
+      try {
+        if (localStorage.getItem(tapKey)) return;
+        localStorage.setItem(tapKey, '1');
+      } catch (e) {}
+      try {
+        fetch('https://firestore.googleapis.com/v1/projects/ibought-14838/databases/(default)/documents/taps?key=AIzaSyBrhS6xJ-B5u4W5fXgvn3fGMLjeRI4Huro', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: {
+              k: { stringValue: shareKey },
+              asin: { stringValue: asin },
+              at: { timestampValue: new Date().toISOString() }
+            }
+          })
+        }).catch(function () {});
+      } catch (e) {}
+    });
+  }
   if (TAG) document.getElementById('disclosure').hidden = false;
   if (SHOW_IMAGE && /^[A-Za-z0-9+_-]{6,24}$/.test(imageId)) {
     var shot = document.getElementById('shot');
