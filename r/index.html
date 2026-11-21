@@ -26,6 +26,7 @@
   <div class="wrap narrow">
     <div class="rec" id="rec" hidden>
       <span class="tag">Recommended by a friend</span>
+      <img class="shot" id="shot" alt="" hidden>
       <h1 id="name"></h1>
       <p class="lead">They bought this themselves and think you would like it.</p>
       <a class="cta" id="go" rel="nofollow sponsored noopener">View on Amazon</a>
@@ -63,7 +64,12 @@
   // the browser; it is never sent to the server.
   var parts = decodeURIComponent(location.hash.replace(/^#/, '')).split('/');
   var asin = (parts[0] || '').toUpperCase();
-  var name = (parts.slice(1).join(' ') || '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  var name = (parts[1] || '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  // Optional third part: Amazon's image id. Only that id is accepted, so a
+  // link can never make this page load a picture from anywhere else.
+  var imageId = parts[2] || '';
+  // Product picture switch. Set to false to hide pictures site-wide.
+  var SHOW_IMAGE = true;
 
   if (!/^[A-Z0-9]{10}$/.test(asin)) {
     document.getElementById('missing').hidden = false;
@@ -73,6 +79,13 @@
   document.getElementById('name').textContent = name || 'Something they bought and liked';
   document.getElementById('go').href = url;
   if (TAG) document.getElementById('disclosure').hidden = false;
+  if (SHOW_IMAGE && /^[A-Za-z0-9+_-]{6,24}$/.test(imageId)) {
+    var shot = document.getElementById('shot');
+    shot.onerror = function () { shot.hidden = true; };
+    shot.alt = name;
+    shot.src = 'https://m.media-amazon.com/images/I/' + imageId + '._SL500_.jpg';
+    shot.hidden = false;
+  }
   if (name) document.title = name + ' · recommended on iBought';
   document.getElementById('rec').hidden = false;
 })();
