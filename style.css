@@ -83,6 +83,27 @@ article h3 { font-size: 18px; margin: 26px 0 4px; }
 article p, article li { color: #343a42; }
 article .date { color: var(--dim); font-size: 15px; margin-top: 0; }
 
+.rec {
+  background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 30px 26px;
+  margin: 18px 0 28px; box-shadow: 0 18px 40px -24px rgba(27, 31, 36, 0.3);
+}
+.rec[hidden] { display: none; }
+.rec h1 { font-size: clamp(26px, 5vw, 36px); line-height: 1.15; margin: 12px 0 10px; }
+.rec .lead { font-size: 18px; margin-bottom: 22px; }
+.tag {
+  display: inline-block; background: #ffe9e2; color: var(--coral-deep); font-weight: 700; font-size: 13px;
+  letter-spacing: 0.02em; padding: 6px 12px; border-radius: 999px;
+}
+.cta {
+  display: block; text-align: center; background: var(--coral); color: #fff; font-weight: 800; font-size: 18px;
+  padding: 16px 20px; border-radius: 14px; text-decoration: none;
+}
+.cta:hover { background: var(--coral-deep); }
+.fine { font-size: 13px; color: var(--dim); margin: 12px 0 0; text-align: center; }
+.about { padding: 0 4px 40px; }
+.about h2 { font-size: 20px; margin: 0 0 8px; }
+.about p { color: var(--dim); margin: 0 0 10px; }
+
 @media (max-width: 820px) {
   .hero .wrap { grid-template-columns: 1fr; gap: 36px; }
   .steps { grid-template-columns: 1fr; }

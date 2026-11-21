@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A friend recommends this · iBought</title>
+<meta name="description" content="A friend bought this and recommends it. Shared with iBought.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="A friend bought this and recommends it">
+<meta property="og:description" content="Tap to see what they picked. Shared with iBought.">
+<meta property="og:image" content="https://ibought.online/icon-512.png">
+<meta property="og:site_name" content="iBought">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/apple-touch-icon.png" alt="">iBought</a>
+    <nav><a href="/support/">Support</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap narrow">
+    <div class="rec" id="rec" hidden>
+      <span class="tag">Recommended by a friend</span>
+      <h1 id="name"></h1>
+      <p class="lead">They bought this themselves and think you would like it.</p>
+      <a class="cta" id="go" rel="nofollow sponsored noopener">View on Amazon</a>
+      <p class="fine" id="disclosure" hidden>As an Amazon Associate I earn from qualifying purchases.</p>
+    </div>
+
+    <div class="rec" id="missing" hidden>
+      <span class="tag">iBought</span>
+      <h1>This recommendation link is incomplete</h1>
+      <p class="lead">Ask your friend to send it again.</p>
+      <a class="cta" href="/">See what iBought is</a>
+    </div>
+
+    <div class="about">
+      <h2>What is iBought?</h2>
+      <p>iBought is an iPhone app that keeps a list of the things you have bought, so when a friend asks “which one did you get?” you can send the exact item in two taps. Recommendations come from people who paid for the product themselves.</p>
+      <p><a href="/">Learn more about iBought</a></p>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><a href="/support/">Support</a> · <a href="/privacy/">Privacy</a></p>
+    <p>iBought is not affiliated with, sponsored by, or endorsed by Amazon.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Amazon Associates tracking tag. Empty = plain product link, no disclosure.
+  var TAG = '';
+
+  // Link format: /r/#<ASIN>/<name-with-hyphens>. Everything after # stays in
+  // the browser; it is never sent to the server.
+  var parts = decodeURIComponent(location.hash.replace(/^#/, '')).split('/');
+  var asin = (parts[0] || '').toUpperCase();
+  var name = (parts.slice(1).join(' ') || '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+
+  if (!/^[A-Z0-9]{10}$/.test(asin)) {
+    document.getElementById('missing').hidden = false;
+    return;
+  }
+  var url = 'https://www.amazon.com/dp/' + asin + (TAG ? '?tag=' + encodeURIComponent(TAG) : '');
+  document.getElementById('name').textContent = name || 'Something they bought and liked';
+  document.getElementById('go').href = url;
+  if (TAG) document.getElementById('disclosure').hidden = false;
+  if (name) document.title = name + ' · recommended on iBought';
+  document.getElementById('rec').hidden = false;
+})();
+</script>
+<noscript><div class="wrap narrow"><p>Turn on JavaScript to see this recommendation.</p></div></noscript>
+</body>
+</html>
