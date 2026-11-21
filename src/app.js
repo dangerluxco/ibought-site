@@ -127,16 +127,31 @@ function start() {
     say($('who'), u ? u.email : '');
     if (!u) return;
     setDoc(doc(db, 'users', u.uid), { email: u.email || null }, { merge: true }).catch(() => {});
-    unsubscribe = onSnapshot(col(), (snap) => {
-      items = new Map();
-      snap.forEach((d) => {
-        const p = d.data();
-        if (!p.deleted && p.title) items.set(d.id, { ...p, id: d.id });
-      });
-      render();
-      if (openId) (items.has(openId) ? fillItem(false) : $('item').close());
-    });
+    listen();
   });
+
+  // The live list. If the connection or permission check fails (it can for a
+  // moment right after an account is created), try again instead of going dead.
+  function listen() {
+    if (!user) return;
+    const uid = user.uid;
+    unsubscribe = onSnapshot(
+      col(),
+      (snap) => {
+        items = new Map();
+        snap.forEach((d) => {
+          const p = d.data();
+          if (!p.deleted && p.title) items.set(d.id, { ...p, id: d.id });
+        });
+        render();
+        if (openId) (items.has(openId) ? fillItem(false) : $('item').close());
+      },
+      () => {
+        $('count').textContent = 'Reconnecting…';
+        setTimeout(() => { if (user && user.uid === uid) listen(); }, 3000);
+      },
+    );
+  }
 
   // ------------------------------------------------------------------- list
   function visible() {
@@ -150,9 +165,14 @@ function start() {
   }
 
   function rowFor(p) {
-    const row = document.createElement('button');
+    // A div, not a <button>: buttons lay out flex children unreliably.
+    const row = document.createElement('div');
     row.className = 'row';
-    row.type = 'button';
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItem(p.id); }
+    });
     let thumb;
     if (p.image) {
       thumb = document.createElement('img');
@@ -166,7 +186,7 @@ function start() {
       thumb.textContent = '□';
     }
     const body = document.createElement('div');
-    body.className = 'body';
+    body.className = 'row-text';
     const title = document.createElement('b');
     title.textContent = p.title;
     const meta = document.createElement('small');
