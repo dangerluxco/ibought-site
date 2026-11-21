@@ -103,6 +103,16 @@ article .date { color: var(--dim); font-size: 15px; margin-top: 0; }
 }
 .cta:hover { background: var(--coral-deep); }
 .fine { font-size: 13px; color: var(--dim); margin: 12px 0 0; text-align: center; }
+.get {
+  background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+  padding: 24px 22px; margin: 0 0 40px; text-align: center;
+}
+.get img { border-radius: 13px; display: block; margin: 0 auto 12px; }
+.get h2 { font-size: 22px; line-height: 1.2; margin: 0 0 8px; }
+.get p { color: var(--dim); margin: 0 0 18px; }
+.get p.fine { margin: 12px 0 0; }
+.cta.dark { background: var(--ink); }
+.cta.dark:hover { background: #000; }
 .about { padding: 0 4px 40px; }
 .about h2 { font-size: 20px; margin: 0 0 8px; }
 .about p { color: var(--dim); margin: 0 0 10px; }
