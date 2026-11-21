@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Purchases · iBought</title>
+<meta name="description" content="Sign in to see, manage and share your iBought list from any browser.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/app/app.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/apple-touch-icon.png" alt="">iBought</a>
+    <nav id="nav">
+      <span id="who" class="who" hidden></span>
+      <button class="link" id="account-open" hidden>Account</button>
+      <button class="link" id="signout" hidden>Sign out</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <p id="loading" class="muted center">Loading…</p>
+
+  <section id="unavailable" class="panel narrow-panel" hidden>
+    <h1>Coming soon</h1>
+    <p class="muted">The web version of iBought is not switched on yet.</p>
+  </section>
+
+  <!-- Signed out -->
+  <section id="auth" class="panel narrow-panel" hidden>
+    <h1>Your iBought list, in any browser</h1>
+    <p class="muted">Sign in with the same account you use in the iBought iPhone app. No account yet? Create one here, then sign in on your phone to bring your Amazon purchases across.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-mode="signin" role="tab">Sign in</button>
+      <button class="tab" data-mode="create" role="tab">Create account</button>
+    </div>
+    <form id="auth-form">
+      <label>Email<input id="email" type="email" autocomplete="email" required></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label>
+      <button class="btn" id="auth-submit" type="submit">Sign in</button>
+      <button class="link" id="forgot" type="button">Forgot password</button>
+      <p class="msg error" id="auth-error" hidden></p>
+      <p class="msg ok" id="auth-notice" hidden></p>
+    </form>
+  </section>
+
+  <!-- Signed in -->
+  <section id="list-view" hidden>
+    <div class="toolbar">
+      <h1>My Purchases</h1>
+      <button class="btn small" id="add-open">Add</button>
+    </div>
+    <div class="filters">
+      <input id="search" type="search" placeholder="Search purchases" autocomplete="off">
+      <div class="chips">
+        <button class="chip on" data-filter="all">All</button>
+        <button class="chip" data-filter="shared">Shared</button>
+      </div>
+    </div>
+    <p id="count" class="muted small"></p>
+    <div id="rows" class="rows"></div>
+    <div id="empty" class="panel center" hidden>
+      <h2>Nothing here yet</h2>
+      <p class="muted">Open the iBought app on your iPhone, sign in with this account, and tap “Get my Amazon purchases”. Your list appears here within a few seconds. You can also add an item by link with the Add button.</p>
+    </div>
+  </section>
+</main>
+
+<!-- Item -->
+<dialog id="item">
+  <div class="dialog-head"><button class="link" data-close>Close</button><button class="link danger" id="item-remove">Remove</button></div>
+  <img id="item-img" class="shot" alt="" hidden>
+  <h2 id="item-title"></h2>
+  <p id="item-date" class="muted small"></p>
+  <label>Why you recommend it (optional)<textarea id="item-note" maxlength="280" rows="3" placeholder="Best one I’ve tried. Worth it."></textarea></label>
+  <p class="label">Your friend will get</p>
+  <pre id="item-preview" class="bubble"></pre>
+  <div class="actions">
+    <button class="btn" id="item-share" hidden>Share</button>
+    <button class="btn" id="item-copy">Copy message</button>
+    <a class="btn ghost" id="item-email">Email it</a>
+    <a class="btn ghost" id="item-text">Text it</a>
+    <button class="btn ghost" id="item-copylink">Copy link</button>
+    <a class="btn ghost" id="item-product" target="_blank" rel="noopener">See the product</a>
+  </div>
+  <p class="msg ok" id="item-notice" hidden></p>
+</dialog>
+
+<!-- Add -->
+<dialog id="add">
+  <div class="dialog-head"><button class="link" data-close>Close</button></div>
+  <h2>Add purchases</h2>
+  <form id="add-form">
+    <p class="label">Add one by link</p>
+    <label>Amazon product link<input id="add-link" type="url" placeholder="https://www.amazon.com/dp/…"></label>
+    <label>What is it?<input id="add-title" type="text" maxlength="160" placeholder="Milk frother"></label>
+    <button class="btn" type="submit">Add to my purchases</button>
+  </form>
+  <hr>
+  <p class="label">Import Amazon’s data file</p>
+  <p class="muted small">From Amazon’s “Request Your Data” export, choose Retail.OrderHistory.1.csv.</p>
+  <input id="add-file" type="file" accept=".csv,text/csv">
+  <p class="muted small">To bring in purchases straight from your Amazon account, use the iPhone app: it signs in on Amazon’s own page, which a website cannot do.</p>
+  <p class="msg error" id="add-error" hidden></p>
+  <p class="msg ok" id="add-notice" hidden></p>
+</dialog>
+
+<!-- Account -->
+<dialog id="account">
+  <div class="dialog-head"><button class="link" data-close>Close</button></div>
+  <h2>Account</h2>
+  <p class="muted" id="account-email"></p>
+  <p class="muted small">Your list, notes and share counts are stored in this account so the iPhone app and this site stay in step.</p>
+  <hr>
+  <p class="label">Delete everything</p>
+  <p class="muted small">Removes every purchase, note and share count from your account and from phones signed in to it.</p>
+  <button class="btn ghost danger" id="wipe">Delete everything</button>
+  <hr>
+  <p class="label">Delete account</p>
+  <p class="muted small">Permanently deletes your account and everything stored in it. A list already on your phone stays on that phone.</p>
+  <label>Password<input id="delete-password" type="password" autocomplete="current-password"></label>
+  <button class="btn danger-solid" id="delete-account">Delete account</button>
+  <p class="msg error" id="account-error" hidden></p>
+</dialog>
+
+<footer class="site">
+  <div class="wrap">
+    <p><a href="/support/">Support</a> · <a href="/privacy/">Privacy</a></p>
+    <p>iBought is not affiliated with, sponsored by, or endorsed by Amazon.</p>
+  </div>
+</footer>
+
+<script type="module" src="/app/app.js"></script>
+</body>
+</html>
