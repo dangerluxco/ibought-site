@@ -201,6 +201,7 @@ function start() {
   }
 
   function render() {
+    dropAutofill();
     const list = visible();
     const rows = $('rows');
     rows.replaceChildren(...list.slice(0, 400).map(rowFor));
@@ -214,7 +215,22 @@ function start() {
     $('search').placeholder = `Search ${total} purchase${total === 1 ? '' : 's'}`;
   }
 
-  $('search').addEventListener('input', render);
+  // Password managers like to drop the account email into the search box,
+  // which filters the list down to nothing. The box stays read-only until it
+  // is actually clicked, and an autofilled email is thrown away.
+  const search = $('search');
+  search.addEventListener('focus', () => search.removeAttribute('readonly'));
+  search.addEventListener('pointerdown', () => search.removeAttribute('readonly'));
+  function dropAutofill() {
+    if (user && search.value && search.value.trim().toLowerCase() === (user.email || '').toLowerCase()) {
+      search.value = '';
+      return true;
+    }
+    return false;
+  }
+  search.addEventListener('input', () => { dropAutofill(); render(); });
+  search.addEventListener('change', () => { if (dropAutofill()) render(); });
+  setInterval(() => { if (dropAutofill()) render(); }, 1500);
   document.querySelectorAll('.chip').forEach((c) =>
     c.addEventListener('click', () => {
       filter = c.dataset.filter;
