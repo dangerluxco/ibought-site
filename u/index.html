@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="/style.css">
 <style>
   .picks-head { padding: 18px 0 6px; }
+  .face { display: block; width: 84px; height: 84px; border-radius: 50%; object-fit: cover; margin: 0 0 12px; }
+  .face[hidden] { display: none; }
   .picks-head h1 { font-size: clamp(28px, 5vw, 40px); margin: 10px 0 6px; }
   .picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; padding: 16px 0 40px; }
   .pick { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit; }
@@ -38,6 +40,7 @@
 
 <main class="wrap">
   <div class="picks-head" id="head" hidden>
+    <img class="face" id="face" alt="" hidden>
     <span class="tag">Bought and recommended</span>
     <h1 id="title"></h1>
     <p class="lead">Things they paid for themselves and would buy again.</p>
@@ -57,7 +60,7 @@
 
 <footer class="site">
   <div class="wrap">
-    <p><a href="/">What is iBought?</a> · <a href="/support/">Support</a> · <a href="/privacy/">Privacy</a></p>
+    <p><a href="/">What is iBought?</a> · <a href="/support/">Support</a> · <a href="/privacy/">Privacy</a> · <a id="report" href="/support/" hidden>Report this page</a></p>
     <p>As an Amazon Associate I earn from qualifying purchases. iBought is not affiliated with, sponsored by, or endorsed by Amazon.</p>
   </div>
 </footer>
@@ -87,6 +90,16 @@
       var picks = (f.picks && f.picks.arrayValue && f.picks.arrayValue.values) || [];
       document.getElementById('title').textContent = name ? name + '’s picks' : 'My picks';
       document.title = (name ? name + '’s picks' : 'Picks') + ' · iBought';
+      // Profile photo: only a small JPEG data URL made by the app is accepted.
+      var photo = val(f.photo) || '';
+      if (photo.length <= 60000 && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(photo)) {
+        var face = document.getElementById('face');
+        face.src = photo;
+        face.hidden = false;
+      }
+      var rep = document.getElementById('report');
+      rep.href = 'mailto:support@ibought.online?subject=' + encodeURIComponent('Report picks page: ' + handle);
+      rep.hidden = false;
       document.getElementById('head').hidden = false;
       if (!picks.length) { state.textContent = 'No picks yet. Check back soon.'; return; }
       state.hidden = true;
