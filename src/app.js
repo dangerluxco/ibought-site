@@ -16,7 +16,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { collection, doc, getDocs, getFirestore, onSnapshot, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 
 import { accountsEnabled, firebaseConfig } from './firebase-config.js';
 import { asinFromUrl, firstUrl, prettyDate, productUrlFor, shareUrlFor, shortTitle } from './generated/amazon.js';
@@ -74,6 +74,12 @@ function start() {
   const save = (id, change) => setDoc(ref(id), { ...change, id, updatedAt: Date.now() }, { merge: true });
 
   // ---------------------------------------------------------------- auth UI
+  // An invite or recommendation link opened in this browser left its code
+  // here; show it in the (optional) invite box so the person can see it.
+  try {
+    const saved = localStorage.getItem('ib-invite') || '';
+    if (/^[a-z0-9]{10}$/.test(saved)) $('invite').value = (saved.slice(0, 5) + '-' + saved.slice(5)).toUpperCase();
+  } catch { /* private window */ }
   document.querySelectorAll('.tab').forEach((t) =>
     t.addEventListener('click', () => {
       mode = t.dataset.mode;
@@ -81,6 +87,7 @@ function start() {
       $('auth-submit').textContent = mode === 'create' ? 'Create account' : 'Sign in';
       $('password').autocomplete = mode === 'create' ? 'new-password' : 'current-password';
       show($('forgot'), mode === 'signin');
+      show($('invite-label'), mode === 'create');
       say($('auth-error'), ''); say($('auth-notice'), '');
     }),
   );
@@ -91,7 +98,17 @@ function start() {
     $('auth-submit').disabled = true;
     try {
       const email = $('email').value.trim();
-      if (mode === 'create') await createUserWithEmailAndPassword(auth, email, $('password').value);
+      if (mode === 'create') {
+        const cred = await createUserWithEmailAndPassword(auth, email, $('password').value);
+        // Invite code: typed here, or prefilled from an invite or
+        // recommendation link opened in this browser. Tells the inviter that
+        // a friend joined (their key + the time, under this new account's id).
+        const invite = ($('invite').value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (/^[a-z0-9]{10}$/.test(invite)) {
+          await setDoc(doc(db, 'joins', cred.user.uid), { k: invite, at: serverTimestamp() }).catch(() => {});
+          try { localStorage.removeItem('ib-invite'); } catch { /* private window */ }
+        }
+      }
       else await signInWithEmailAndPassword(auth, email, $('password').value);
       $('password').value = '';
     } catch (err) {
@@ -397,6 +414,7 @@ function start() {
         await batch.commit();
       }
       const last = writeBatch(db);
+      await deleteDoc(doc(db, 'joins', uid)).catch(() => {});
       last.delete(doc(db, 'users', uid));
       await last.commit();
       await deleteUser(user);

@@ -42,6 +42,7 @@
     <form id="auth-form">
       <label>Email<input id="email" type="email" autocomplete="email" required></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label>
+      <label id="invite-label" hidden>Invite code (optional)<input id="invite" type="text" autocomplete="off" autocapitalize="characters" maxlength="14" data-1p-ignore data-lpignore="true"></label>
       <button class="btn" id="auth-submit" type="submit">Sign in</button>
       <button class="link" id="forgot" type="button">Forgot password</button>
       <p class="msg error" id="auth-error" hidden></p>

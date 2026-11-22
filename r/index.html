@@ -47,6 +47,7 @@
       <h2>Your turn. What would you recommend?</h2>
       <p>iBought is a free iPhone app that keeps a list of the things you have bought, so when a friend asks “which one did you get?” you can send the exact item in two taps.</p>
       <a class="cta dark" href="https://apps.apple.com/app/id6837750229">Get iBought free on the App Store</a>
+      <p class="fine" id="invite-line" hidden>Creating an account? Enter invite code <b id="invite-code"></b> so your friend knows you joined.</p>
       <p class="fine"><a href="/">Learn more about iBought</a></p>
     </div>
   </div>
@@ -87,6 +88,11 @@
   // the time. Nothing about the visitor. See firestore.rules (opens).
   var shareKey = parts[3] || '';
   if (/^[a-z0-9]{10}$/.test(shareKey)) {
+    // The sharer's key doubles as their invite code (see /i/). Remember it
+    // for an account created in this browser, unless an invite is already set.
+    try { if (!localStorage.getItem('ib-invite')) localStorage.setItem('ib-invite', shareKey); } catch (e) {}
+    document.getElementById('invite-code').textContent = (shareKey.slice(0, 5) + '-' + shareKey.slice(5)).toUpperCase();
+    document.getElementById('invite-line').hidden = false;
     var seenKey = 'ib-open-' + shareKey + '-' + asin;
     var seen = false;
     try { seen = !!localStorage.getItem(seenKey); } catch (e) {}

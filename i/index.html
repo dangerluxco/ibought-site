@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A friend invited you · iBought</title>
+<meta name="description" content="A friend invited you to iBought: keep a list of what you bought and send the exact item to a friend in two taps.">
+<meta name="robots" content="noindex">
+<meta name="apple-itunes-app" content="app-id=6837750229">
+<meta property="og:title" content="Join me on iBought">
+<meta property="og:description" content="Keep a list of what you bought and send the exact item to a friend in two taps. Free for iPhone.">
+<meta property="og:image" content="https://ibought.online/icon-512.png">
+<meta property="og:site_name" content="iBought">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .code { display: inline-block; font-size: 24px; font-weight: 800; letter-spacing: 0.12em; background: var(--bg); border: 1px dashed var(--coral); border-radius: 12px; padding: 10px 16px; margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+  .steps { text-align: left; color: var(--dim); margin: 0 auto 18px; padding-left: 22px; max-width: 30em; }
+  .steps li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/apple-touch-icon.png" alt="">iBought</a>
+    <nav><a href="/support/">Support</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap narrow">
+    <div class="get" style="margin-top: 18px">
+      <img src="/apple-touch-icon.png" alt="" width="56" height="56">
+      <h1 style="font-size: clamp(26px, 5vw, 34px); line-height: 1.15; margin: 0 0 10px">A friend invited you to iBought</h1>
+      <p>iBought is a free iPhone app that keeps a list of the things you have bought, so when someone asks “which one did you get?” you can send the exact item in two taps.</p>
+      <a class="cta dark" href="https://apps.apple.com/app/id6837750229">Get iBought free on the App Store</a>
+
+      <div id="invite" hidden>
+        <p style="margin: 22px 0 6px"><b>Your invite code</b></p>
+        <div class="code" id="code"></div>
+        <ol class="steps" id="app-steps" hidden>
+          <li>Install iBought and open it.</li>
+          <li>In Settings, tap “Use iBought on the web”, then “Create account”.</li>
+          <li>Type this code in the “Invite code” box, so your friend knows you joined.</li>
+        </ol>
+        <p class="fine">An account is optional. Without one the app works the same, and your list stays only on your phone.</p>
+        <p class="fine"><a id="web" href="/app/">Create an account in your browser</a> and the code is filled in for you.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><a href="/">What is iBought?</a> · <a href="/support/">Support</a> · <a href="/privacy/">Privacy</a></p>
+    <p>iBought is not affiliated with, sponsored by, or endorsed by Amazon.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Invite link: /i/#<inviter's key>. The key stays in the browser. It is
+  // remembered here so that creating an account at /app in this browser
+  // credits the friend without typing anything.
+  var key = decodeURIComponent(location.hash.replace(/^#/, '')).toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!/^[a-z0-9]{10}$/.test(key)) return;
+  try { localStorage.setItem('ib-invite', key); } catch (e) {}
+  document.getElementById('code').textContent = key.slice(0, 5).toUpperCase() + '-' + key.slice(5).toUpperCase();
+  // The app's "Invite code" box arrives with app version 1.1.1. Set this to
+  // true once that version is live on the App Store, to show the app steps.
+  var APP_HAS_INVITE_BOX = false;
+  document.getElementById('app-steps').hidden = !APP_HAS_INVITE_BOX;
+  document.getElementById('invite').hidden = false;
+})();
+</script>
+</body>
+</html>
