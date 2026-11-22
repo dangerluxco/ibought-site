@@ -415,6 +415,13 @@ function start() {
       }
       const last = writeBatch(db);
       await deleteDoc(doc(db, 'joins', uid)).catch(() => {});
+      // Anything shared with the community feed (the post first: the rule
+      // that allows deleting it reads the private record).
+      const posts = await getDocs(collection(db, 'users', uid, 'posts')).catch(() => null);
+      for (const p of posts ? posts.docs : []) {
+        await deleteDoc(doc(db, 'community', String(p.data().id))).catch(() => {});
+        await deleteDoc(p.ref).catch(() => {});
+      }
       last.delete(doc(db, 'users', uid));
       await last.commit();
       await deleteUser(user);
