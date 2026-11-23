@@ -69,7 +69,7 @@
   document.getElementById('code').textContent = key.slice(0, 5).toUpperCase() + '-' + key.slice(5).toUpperCase();
   // The app's "Invite code" box arrives with app version 1.1.1. Set this to
   // true once that version is live on the App Store, to show the app steps.
-  var APP_HAS_INVITE_BOX = false;
+  var APP_HAS_INVITE_BOX = true;
   document.getElementById('app-steps').hidden = !APP_HAS_INVITE_BOX;
   document.getElementById('invite').hidden = false;
 })();
